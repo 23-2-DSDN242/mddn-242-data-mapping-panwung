@@ -18,25 +18,27 @@ function setup () {
 
   imageMode(CENTER);
   noStroke();
-  background(255, 0, 0);
+  // background(255, 0, 0);
+  image(sourceImg, width/2, height/2, width, height);
   sourceImg.loadPixels();
   maskImg.loadPixels();
 }
 
 function draw () {
-  for(let i=0;i<4000;i++) {
+  
+  for(let i=0;i<7000;i++) {
     let x = floor(random(sourceImg.width));
     let y = floor(random(sourceImg.height));
     let pix = sourceImg.get(x, y);
     let mask = maskImg.get(x, y);
     fill(pix);
     if(mask[0] > 128) {
-      let pointSize = 10;
-      ellipse(x, y, pointSize, pointSize);
+      let pointSize = 15;
+      rect(x, y, 1.5 * pointSize, 0.5 * pointSize);
     }
     else {
-      let pointSize = 20;
-      rect(x, y, pointSize, pointSize);    
+      let pointSize = 10;
+      ellipse(x, y, pointSize, pointSize);    
     }
   }
   renderCounter = renderCounter + 1;
@@ -44,7 +46,7 @@ function draw () {
     console.log("Done!")
     noLoop();
     // uncomment this to save the result
-    // saveArtworkImage(outputFile);
+    saveArtworkImage(outputFile);
   }
 }
 
