@@ -1,3 +1,19 @@
+/**
+ * courtesy of this video:
+ * https://www.youtube.com/watch?v=F2Jc-UqOFSo
+ */
+class InkBleed {
+  constructor(x, y, r, min=3, max=6) {
+    this.x = x;
+    this.y = y;
+    this.startRadius = r;
+    this.maxSpeed = Math.random() * (max - min) + min;
+  }
+}
+
+
+
+
 let sourceImg=null;
 let maskImg=null;
 let renderCounter=0;
@@ -25,28 +41,33 @@ function setup () {
 }
 
 function draw () {
+
+  let run = false;
+
+  if (run) {
   
-  for(let i=0;i<7000;i++) {
-    let x = floor(random(sourceImg.width));
-    let y = floor(random(sourceImg.height));
-    let pix = sourceImg.get(x, y);
-    let mask = maskImg.get(x, y);
-    fill(pix);
-    if(mask[0] > 128) {
-      let pointSize = 15;
-      rect(x, y, 1.5 * pointSize, 0.5 * pointSize);
+    for(let i=0;i<7000;i++) {
+      let x = floor(random(sourceImg.width));
+      let y = floor(random(sourceImg.height));
+      let pix = sourceImg.get(x, y);
+      let mask = maskImg.get(x, y);
+      fill(pix);
+      if(mask[0] > 128) {
+        let pointSize = 15;
+        ellipse(x, y, pointSize, pointSize);
+      }
+      else {
+        let pointSize = 10;
+        rect(x, y, pointSize, pointSize);    
+      }
     }
-    else {
-      let pointSize = 10;
-      ellipse(x, y, pointSize, pointSize);    
+    renderCounter = renderCounter + 1;
+    if(renderCounter > 10) {
+      console.log("Done!")
+      noLoop();
+      // uncomment this to save the result
+      // saveArtworkImage(outputFile);
     }
-  }
-  renderCounter = renderCounter + 1;
-  if(renderCounter > 10) {
-    console.log("Done!")
-    noLoop();
-    // uncomment this to save the result
-    saveArtworkImage(outputFile);
   }
 }
 
