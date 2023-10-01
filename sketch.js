@@ -1,16 +1,35 @@
 /**
  * courtesy of this video:
  * https://www.youtube.com/watch?v=F2Jc-UqOFSo
+ * https://editor.p5js.org/BarneyCodes/sketches/UAETy7xKg
  */
-class InkBleed {
-  constructor(x, y, r, min=3, max=6) {
-    this.x = x;
-    this.y = y;
-    this.startRadius = r;
-    this.maxSpeed = Math.random() * (max - min) + min;
+class Drip {
+  constructor(r) {
+    this.radius = r;
+    this.startR = r;
+    this.maxSpeed = Math.floor(Math.random() * (6  - 3) + 3);
+  }
+  
+  draw(x, y, col) {
+    let a = map(this.radius, this.startR, 0, 255, 0);
+    col[3] = a;
+    
+    if (this.radius > 0) {
+      push();
+      fill(col);
+      
+      ellipse(x, y, this.radius * 2, this.radius * 2);
+      pop();
+      
+      this.radius -= 0.05;
+      x += random(-0.5, 0.5);
+      y += map(this.radius, this.startR, 0, this.maxSpeed, 0);
+      
+      this.draw(x, y, col);
+      
+    }
   }
 }
-
 
 
 
@@ -40,27 +59,35 @@ function setup () {
   maskImg.loadPixels();
 }
 
+
+
 function draw () {
 
-  let run = false;
+  let runtime = 7000;
+  let dripArray = [];
 
-  if (run) {
-  
-    for(let i=0;i<7000;i++) {
+
+  if (runtime > 0) {
+    for(let i=0;i<runtime;i++) {
       let x = floor(random(sourceImg.width));
       let y = floor(random(sourceImg.height));
       let pix = sourceImg.get(x, y);
       let mask = maskImg.get(x, y);
       fill(pix);
       if(mask[0] > 128) {
-        let pointSize = 15;
-        ellipse(x, y, pointSize, pointSize);
+        dripArray.push([x, y, pix]);
       }
       else {
         let pointSize = 10;
-        rect(x, y, pointSize, pointSize);    
+        ellipse(x, y, pointSize, pointSize);    
       }
     }
+  
+    for (let i=dripArray.length -1; i >= 0; i--) {
+      new Drip(random(5, 10)).draw(dripArray[i][0], dripArray[i][1], dripArray[i][2]);
+      dripArray.splice(i, 1);
+    }
+
     renderCounter = renderCounter + 1;
     if(renderCounter > 10) {
       console.log("Done!")
