@@ -1,30 +1,35 @@
 /**
- * courtesy of this links
+ * courtesy of this link
  * https://editor.p5js.org/BarneyCodes/sketches/UAETy7xKg
+ * 
+ * recursion my beloved
  */
-
 function inkDroplet(x, y, radius, startingRadius, previousColour=null) {
+  // Init vars
   let minspeed = 4, maxspeed = 8;
   let maxSpeed = Math.floor(Math.random() * (maxspeed - minspeed) + minspeed);
-  let alpha = map(radius, startingRadius, 0, 255, 0);
+  let alpha = map(radius, startingRadius, 0, 127, 0);
 
+  // Init colours
   let fillcol = sourceImg.get(x, y);
   fillcol[3] = alpha;
 
+  // 10% chance to pick up a new colour instead of using the previous colour
   if (previousColour != null) fillcol = (Math.random() > 0.9) ? fillcol : previousColour;
 
+  // recursively draw while the radius is greater than 0
   if (radius > 0) {
     push();
     fill(fillcol);
     ellipse(x, y, 2 * radius, 2 * radius);
     pop();
 
+    // offset x and y 
     x += Math.random() - 0.5;
     y += map(radius, startingRadius, 0, maxSpeed, 0);
 
     inkDroplet(x, y, radius - 0.08, startingRadius, fillcol);
   }
-
 }
 
 
@@ -32,10 +37,12 @@ let sourceImg=null;
 let maskImg=null;
 let renderCounter=0;
 
+const FILE_NUM = "6";
+
 // change these three lines as appropiate
-let sourceFile = "input_3.jpg";
-let maskFile   = "mask_3.png";
-let outputFile = "output_3.png";
+let sourceFile = "input_" + FILE_NUM + ".jpg";
+let maskFile   = "mask_" + FILE_NUM + ".png";
+let outputFile = "output_" + FILE_NUM + ".png";
 
 function preload() {
   sourceImg = loadImage(sourceFile);
@@ -48,7 +55,7 @@ function setup () {
 
   imageMode(CENTER);
   noStroke();
-  // background(255, 0, 0);
+  // background(255, 255, 255);
   image(sourceImg, width/2, height/2, width, height);
   sourceImg.loadPixels();
   maskImg.loadPixels();
@@ -60,7 +67,7 @@ function draw () {
 
   let min = 5, max = 10;
   let runtime = 10000;
-  let repeats = 10;
+  let repeats = 15;
 
 
   if (runtime > 0) {
@@ -75,21 +82,22 @@ function draw () {
       }
       else {
         push();
+          
           let fillcol = color(pix);
           colorMode(HSB, 100);
-
-          fill(hue(fillcol), 0, brightness(fillcol));
+          fill(hue(fillcol), 0, brightness(fillcol), 40);
+          
           let pointSize = Math.random() * (15 - 10) + 10;
           ellipse(x, y, pointSize, pointSize);
         pop();
       }
     }
 
+    // Draws the ink droplets last so that the effect (utlimately) is not obfuscated
     for (let point of doLater) {
       let startingRadius = Math.random() * (max - min) + min;
       inkDroplet(point[0], point[1], startingRadius, startingRadius);
     }
-
     doLater = [];
   
     renderCounter++;
@@ -110,9 +118,6 @@ function keyTyped() {
 
 
 /**
- * write some code to displace x by sine 
- * x + A * sine(something to do with y)
- * if it goes over the edges then just add or subtract 1920
- * 
- * or displace vertically
+ * get better images
+ * for the not mask areas, maybe have a chance to make them black?
  */
