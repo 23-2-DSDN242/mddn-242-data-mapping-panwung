@@ -1,36 +1,31 @@
 /**
- * courtesy of this video:
- * https://www.youtube.com/watch?v=F2Jc-UqOFSo
+ * courtesy of this links
  * https://editor.p5js.org/BarneyCodes/sketches/UAETy7xKg
  */
-class Drip {
-  constructor(r) {
-    this.radius = r;
-    this.startR = r;
-    this.maxSpeed = Math.floor(Math.random() * (6  - 3) + 3);
-  }
-  
-  draw(x, y, col) {
-    let a = map(this.radius, this.startR, 0, 255, 0);
-    col[3] = a;
-    
-    if (this.radius > 0) {
-      push();
-      fill(col);
-      
-      ellipse(x, y, this.radius * 2, this.radius * 2);
-      pop();
-      
-      this.radius -= 0.05;
-      x += random(-0.5, 0.5);
-      y += map(this.radius, this.startR, 0, this.maxSpeed, 0);
-      
-      this.draw(x, y, col);
-      
-    }
-  }
-}
 
+function inkDroplet(x, y, radius, startingRadius, previousColour=null) {
+  let minspeed = 4, maxspeed = 8;
+  let maxSpeed = Math.floor(Math.random() * (maxspeed - minspeed) + minspeed);
+  let alpha = map(radius, startingRadius, 0, 255, 0);
+
+  let fillcol = sourceImg.get(x, y);
+  fillcol[3] = alpha;
+
+  if (previousColour != null) fillcol = (Math.random() > 0.9) ? fillcol : previousColour;
+
+  if (radius > 0) {
+    push();
+    fill(fillcol);
+    ellipse(x, y, 2 * radius, 2 * radius);
+    pop();
+
+    x += Math.random() - 0.5;
+    y += map(radius, startingRadius, 0, maxSpeed, 0);
+
+    inkDroplet(x, y, radius - 0.08, startingRadius, fillcol);
+  }
+
+}
 
 
 let sourceImg=null;
@@ -38,9 +33,9 @@ let maskImg=null;
 let renderCounter=0;
 
 // change these three lines as appropiate
-let sourceFile = "input_1.jpg";
-let maskFile   = "mask_1.png";
-let outputFile = "output_1.png";
+let sourceFile = "input_3.jpg";
+let maskFile   = "mask_3.png";
+let outputFile = "output_3.png";
 
 function preload() {
   sourceImg = loadImage(sourceFile);
@@ -60,11 +55,12 @@ function setup () {
 }
 
 
-
+let doLater = [];
 function draw () {
 
-  let runtime = 7000;
-  let dripArray = [];
+  let min = 5, max = 10;
+  let runtime = 10000;
+  let repeats = 10;
 
 
   if (runtime > 0) {
@@ -73,23 +69,31 @@ function draw () {
       let y = floor(random(sourceImg.height));
       let pix = sourceImg.get(x, y);
       let mask = maskImg.get(x, y);
-      fill(pix);
+      
       if(mask[0] > 128) {
-        dripArray.push([x, y, pix]);
+        doLater.push([x, y]);
       }
       else {
-        let pointSize = 10;
-        ellipse(x, y, pointSize, pointSize);    
+        push();
+          let fillcol = color(pix);
+          colorMode(HSB, 100);
+
+          fill(hue(fillcol), 0, brightness(fillcol));
+          let pointSize = Math.random() * (15 - 10) + 10;
+          ellipse(x, y, pointSize, pointSize);
+        pop();
       }
     }
-  
-    for (let i=dripArray.length -1; i >= 0; i--) {
-      new Drip(random(5, 10)).draw(dripArray[i][0], dripArray[i][1], dripArray[i][2]);
-      dripArray.splice(i, 1);
+
+    for (let point of doLater) {
+      let startingRadius = Math.random() * (max - min) + min;
+      inkDroplet(point[0], point[1], startingRadius, startingRadius);
     }
 
-    renderCounter = renderCounter + 1;
-    if(renderCounter > 10) {
+    doLater = [];
+  
+    renderCounter++;
+    if(renderCounter > repeats) {
       console.log("Done!")
       noLoop();
       // uncomment this to save the result
@@ -103,3 +107,12 @@ function keyTyped() {
     saveBlocksImages();
   }
 }
+
+
+/**
+ * write some code to displace x by sine 
+ * x + A * sine(something to do with y)
+ * if it goes over the edges then just add or subtract 1920
+ * 
+ * or displace vertically
+ */
