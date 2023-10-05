@@ -61,14 +61,12 @@ function setup () {
   maskImg.loadPixels();
 }
 
-
 let doLater = [];
 function draw () {
 
   let min = 5, max = 10;
   let runtime = 10000;
   let repeats = 15;
-
 
   if (runtime > 0) {
     for(let i=0;i<runtime;i++) {
@@ -82,13 +80,14 @@ function draw () {
       }
       else {
         push();
-          
-          let fillcol = color(pix);
-          colorMode(HSB, 100);
-          fill(hue(fillcol), 0, brightness(fillcol), 40);
-          
-          let pointSize = Math.random() * (15 - 10) + 10;
-          ellipse(x, y, pointSize, pointSize);
+        let randomize = Math.random() > 0.995;
+        
+        let fillcol = color(pix);
+        colorMode(HSB, 100);
+        fill(hue(fillcol), 0, (randomize) ? Math.random() * 20 : brightness(fillcol), 40);
+        
+        let pointSize = Math.random() * (15 - 10) + 10;
+        ellipse(x, y, ((randomize) ? 1.5 : 1) * pointSize, ((randomize) ? 1.5 : 1) * pointSize);
         pop();
       }
     }
@@ -115,9 +114,3 @@ function keyTyped() {
     saveBlocksImages();
   }
 }
-
-
-/**
- * get better images
- * for the not mask areas, maybe have a chance to make them black?
- */
