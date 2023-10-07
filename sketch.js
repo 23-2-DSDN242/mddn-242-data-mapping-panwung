@@ -79,16 +79,22 @@ function draw () {
         doLater.push([x, y]);
       }
       else {
-        push();
+        
         let randomize = Math.random() > 0.995;
-        
-        let fillcol = color(pix);
-        colorMode(HSB, 100);
-        fill(hue(fillcol), 0, (randomize) ? Math.random() * 20 : brightness(fillcol), 40);
-        
-        let pointSize = Math.random() * (15 - 10) + 10;
-        ellipse(x, y, ((randomize) ? 1.5 : 1) * pointSize, ((randomize) ? 1.5 : 1) * pointSize);
-        pop();
+
+        if (randomize) {
+          doLater.push([x, y]);
+        }
+        else {
+          push();
+          let fillcol = color(pix);
+          colorMode(HSB, 100);
+          fill(hue(fillcol), 0, (randomize) ? Math.random() * 20 : brightness(fillcol), 40);
+          
+          let pointSize = Math.random() * (15 - 10) + 10;
+          ellipse(x, y, pointSize, pointSize);
+          pop();
+        }
       }
     }
 
