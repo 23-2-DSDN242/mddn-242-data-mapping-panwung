@@ -55,7 +55,7 @@ function setup () {
 
   imageMode(CENTER);
   noStroke();
-  // background(255, 255, 255);
+  // background(170, 170, 170);
   image(sourceImg, width/2, height/2, width, height);
   sourceImg.loadPixels();
   maskImg.loadPixels();
@@ -79,8 +79,8 @@ function draw () {
         doLater.push([x, y]);
       }
       else {
-        
-        let randomize = Math.random() > 0.995;
+
+        let randomize = Math.random() > 0.999;
 
         if (randomize) {
           doLater.push([x, y]);
@@ -91,7 +91,7 @@ function draw () {
           colorMode(HSB, 100);
           fill(hue(fillcol), 0, (randomize) ? Math.random() * 20 : brightness(fillcol), 40);
           
-          let pointSize = Math.random() * (15 - 10) + 10;
+          let pointSize = Math.random() * (15 - 5) + 5;
           ellipse(x, y, pointSize, pointSize);
           pop();
         }
@@ -110,7 +110,7 @@ function draw () {
       console.log("Done!")
       noLoop();
       // uncomment this to save the result
-      saveArtworkImage(outputFile);
+      // saveArtworkImage(outputFile);
     }
   }
 }
