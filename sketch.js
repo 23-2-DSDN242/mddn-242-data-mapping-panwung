@@ -4,22 +4,30 @@
  * 
  * recursion my beloved
  */
-function inkDroplet(x, y, radius, startingRadius, previousColour=null) {
+function inkDroplet(x, y, radius, startingRadius, decrement=0.08, carryColor=null) {
   // Init vars
   let minspeed = 4, maxspeed = 8;
   let maxSpeed = Math.floor(Math.random() * (maxspeed - minspeed) + minspeed);
   let alpha = map(radius, startingRadius, 0, 127, 0);
 
   // Init colours
+  colorMode(RGB);
   let fillcol = sourceImg.get(x, y);
   fillcol[3] = alpha;
 
   // 10% chance to pick up a new colour instead of using the previous colour
-  if (previousColour != null) fillcol = (Math.random() > 0.9) ? fillcol : previousColour;
+  if (carryColor === "greyscale") {
+    colorMode(HSB, 100);
+    fillcol = [hue(fillcol), 0, brightness(fillcol), Math.random() * 7];
+  }
+  else if (carryColor !== null) { 
+    fillcol = (Math.random() > 0.9) ? fillcol : carryColor;
+  }
 
   // recursively draw while the radius is greater than 0
   if (radius > 0) {
     push();
+    
     fill(fillcol);
     ellipse(x, y, 2 * radius, 2 * radius);
     pop();
@@ -28,7 +36,7 @@ function inkDroplet(x, y, radius, startingRadius, previousColour=null) {
     x += Math.random() - 0.5;
     y += map(radius, startingRadius, 0, maxSpeed, 0);
 
-    inkDroplet(x, y, radius - 0.08, startingRadius, fillcol);
+    inkDroplet(x, y, radius - decrement, startingRadius, decrement, (carryColor === "greyscale") ? "greyscale" : fillcol);
   }
 }
 
@@ -64,38 +72,22 @@ function setup () {
 let doLater = [];
 function draw () {
 
-  let min = 5, max = 10;
+  let min = 5, max = 8;
   let runtime = 10000;
-  let repeats = 15;
+  let repeats = 1;
 
   if (runtime > 0) {
     for(let i=0;i<runtime;i++) {
       let x = floor(random(sourceImg.width));
       let y = floor(random(sourceImg.height));
-      let pix = sourceImg.get(x, y);
       let mask = maskImg.get(x, y);
       
       if(mask[0] > 128) {
         doLater.push([x, y]);
       }
       else {
-
-        let randomize = Math.random() > 0.999;
-        doLater.push([x, y]);
-
-        // if (randomize) {
-        //   doLater.push([x, y]);
-        // }
-        // else {
-        //   push();
-        //   let fillcol = color(pix);
-        //   colorMode(HSB, 100);
-        //   fill(hue(fillcol), 0, (randomize) ? Math.random() * 20 : brightness(fillcol), 40);
-          
-        //   let pointSize = Math.random() * (15 - 5) + 5;
-        //   ellipse(x, y, pointSize, pointSize);
-        //   pop();
-        // }
+        let rad = Math.random() * (10 - 5) + 5;
+        inkDroplet(x, y, rad, rad, 0.15, "greyscale");
       }
     }
 
