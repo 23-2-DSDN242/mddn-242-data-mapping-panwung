@@ -4,7 +4,7 @@
  * 
  * recursion my beloved
  */
-function inkDroplet(x, y, radius, startingRadius, decrement=0.08, carryColor=null) {
+function inkDroplet(x, y, radius, startingRadius, decrement, carryColor=null) {
   // Init vars
   let minspeed = 4, maxspeed = 8;
   let maxSpeed = Math.floor(Math.random() * (maxspeed - minspeed) + minspeed);
@@ -15,11 +15,12 @@ function inkDroplet(x, y, radius, startingRadius, decrement=0.08, carryColor=nul
   let fillcol = sourceImg.get(x, y);
   fillcol[3] = alpha;
 
-  // 10% chance to pick up a new colour instead of using the previous colour
+  // Greyscale the colour if this mode is set
   if (carryColor === "greyscale") {
     colorMode(HSB, 100);
-    fillcol = [hue(fillcol), 0, brightness(fillcol), Math.random() * 7];
+    fillcol = [hue(fillcol), 0, brightness(fillcol), Math.random() * 8];
   }
+  // 10% chance to pick up a new colour instead of using the previous colour
   else if (carryColor !== null) { 
     fillcol = (Math.random() > 0.9) ? fillcol : carryColor;
   }
@@ -40,11 +41,11 @@ function inkDroplet(x, y, radius, startingRadius, decrement=0.08, carryColor=nul
   }
 }
 
+let sourceImg = null;
+let maskImg = null;
+let renderCounter = 0;
 
-let sourceImg=null;
-let maskImg=null;
-let renderCounter=0;
-
+const SAVE = false;
 const FILE_NUM = "6";
 
 // change these three lines as appropiate
@@ -72,7 +73,7 @@ function setup () {
 let doLater = [];
 function draw () {
 
-  let min = 5, max = 8;
+  let min = 5, max = 8; // min and max radius sizes
   let runtime = 10000;
   let repeats = 1;
 
@@ -86,15 +87,15 @@ function draw () {
         doLater.push([x, y]);
       }
       else {
-        let rad = Math.random() * (10 - 5) + 5;
-        inkDroplet(x, y, rad, rad, 0.15, "greyscale");
+        let rad = Math.random() * (max - min + 2) + min;
+        inkDroplet(x, y, rad, rad, 0.13, "greyscale");
       }
     }
 
     // Draws the ink droplets last so that the effect (utlimately) is not obfuscated
     for (let point of doLater) {
       let startingRadius = Math.random() * (max - min) + min;
-      inkDroplet(point[0], point[1], startingRadius, startingRadius);
+      inkDroplet(point[0], point[1], startingRadius, startingRadius, 0.08);
     }
     doLater = [];
   
@@ -102,8 +103,7 @@ function draw () {
     if(renderCounter > repeats) {
       console.log("Done!")
       noLoop();
-      // uncomment this to save the result
-      // saveArtworkImage(outputFile);
+      if (SAVE) saveArtworkImage(outputFile);
     }
   }
 }
