@@ -65,7 +65,6 @@ function setup () {
 
   imageMode(CENTER);
   noStroke();
-  // background(170, 170, 170);
   image(sourceImg, width/2, height/2, width, height);
   sourceImg.loadPixels();
   maskImg.loadPixels();
@@ -110,7 +109,6 @@ function draw () {
     noLoop();
     if (SAVE) saveArtworkImage(outputFile);
   }
-  
 }
 
 function keyTyped() {
