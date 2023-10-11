@@ -46,6 +46,7 @@ let maskImg = null;
 let renderCounter = 0;
 
 const SAVE = false;
+const RUN = true;
 const FILE_NUM = "6";
 
 // change these three lines as appropiate
@@ -72,40 +73,44 @@ function setup () {
 
 let doLater = [];
 function draw () {
+  if (!RUN) {
+    noLoop();
+    return;
+  }
 
   let min = 5, max = 8; // min and max radius sizes
-  let runtime = 10000;
+  let points = 10000;
   let repeats = 1;
 
-  if (runtime > 0) {
-    for(let i=0;i<runtime;i++) {
-      let x = floor(random(sourceImg.width));
-      let y = floor(random(sourceImg.height));
-      let mask = maskImg.get(x, y);
-      
-      if(mask[0] > 128) {
-        doLater.push([x, y]);
-      }
-      else {
-        let rad = Math.random() * (max - min + 2) + min;
-        inkDroplet(x, y, rad, rad, 0.13, "greyscale");
-      }
-    }
 
-    // Draws the ink droplets last so that the effect (utlimately) is not obfuscated
-    for (let point of doLater) {
-      let startingRadius = Math.random() * (max - min) + min;
-      inkDroplet(point[0], point[1], startingRadius, startingRadius, 0.08);
+  for(let i=0;i<points;i++) {
+    let x = floor(random(sourceImg.width));
+    let y = floor(random(sourceImg.height));
+    let mask = maskImg.get(x, y);
+    
+    if(mask[0] > 128) {
+      doLater.push([x, y]);
     }
-    doLater = [];
-  
-    renderCounter++;
-    if(renderCounter > repeats) {
-      console.log("Done!")
-      noLoop();
-      if (SAVE) saveArtworkImage(outputFile);
+    else {
+      let rad = Math.random() * (max - min + 2) + min;
+      inkDroplet(x, y, rad, rad, 0.13, "greyscale");
     }
   }
+
+  // Draws the ink droplets last so that the effect (utlimately) is not obfuscated
+  for (let point of doLater) {
+    let startingRadius = Math.random() * (max - min) + min;
+    inkDroplet(point[0], point[1], startingRadius, startingRadius, 0.08);
+  }
+  doLater = [];
+
+  renderCounter++;
+  if(renderCounter > repeats) {
+    console.log("Done!")
+    noLoop();
+    if (SAVE) saveArtworkImage(outputFile);
+  }
+  
 }
 
 function keyTyped() {
